@@ -1,7 +1,7 @@
 public interface Constants {
     public static final int SOCKET_TIMEOUT = 75000;
     // Initialization
-    String BOT_USERNAME = "Yes Man";
+    String BOT_USERNAME = "TEaCHer";
     String BOT_TOKEN = System.getenv("wagieBotToken");
     int CREATOR_ID = Integer.parseInt(System.getenv("creatorId"));
     String START_DESCRIPTION = "Starts the WagieBot (not really)";
