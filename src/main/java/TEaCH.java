@@ -3,21 +3,19 @@ import org.telegram.abilitybots.api.objects.Ability;
 import org.telegram.abilitybots.api.objects.Flag;
 import org.telegram.abilitybots.api.objects.Locality;
 import org.telegram.abilitybots.api.objects.Privacy;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Random;
 
-public class TEaCHer extends AbilityBot implements Constants {
+public class TEaCH extends AbilityBot implements Constants {
 
     private final ResponseHandler responseHandler;
 
-    TEaCHer(String botToken, String botUsername) {
+    TEaCH(String botToken, String botUsername) {
         super(botToken, botUsername);
         responseHandler = new ResponseHandler(sender, db);
     }
 
-    TEaCHer() {
+    TEaCH() {
         this(BOT_TOKEN, BOT_USERNAME);
     }
 
@@ -47,24 +45,29 @@ public class TEaCHer extends AbilityBot implements Constants {
     }
 
     public String rollDice(String userInput) { //takes input of XdY, where X is num of dice and Y is num of sides on each die
-        String badInput = "bad input. Try again, see examples of good input below: \n/roll 2d6\n/roll 1d20";
         userInput = userInput.toLowerCase();
+        String badInput = "bad input. Try again, see examples of good input below: \n/roll 2d6\n/roll 1d20";
+
         if (userInput.contains("d") &&
+                userInput.indexOf("d") != 0 &&
+                userInput.indexOf("d") != userInput.length() &&
+                userInput.length() >= 3 &&
                 userInput.replace("d", "").length() == userInput.length() - 1 &&
-                userInput.replace("d", "").chars().allMatch(Character::isDigit) ) {
+                userInput.replace("d", "").chars().allMatch(Character::isDigit)) {
             int dieCount = Integer.parseInt(userInput.substring(0, userInput.indexOf("d")));
             int dieFaces = Integer.parseInt(userInput.substring(userInput.indexOf("d") + 1));
-            if(dieCount<1||dieFaces<2) return badInput;
+            if( dieFaces == 1) return "okay retard";
+            if (dieCount < 1 || dieFaces < 2) return badInput;
 
             Random rand = new Random();
             StringBuilder output = new StringBuilder();
 
-            if(dieCount>10) {
+            if (dieCount > 10) {
                 dieCount = 10;
                 output.append("You are limited to 10 rolls at a time\n");
             }
-            if(dieCount==1){
-                return (rand.nextInt(dieFaces) + 1)+"";
+            if (dieCount == 1) {
+                return (rand.nextInt(dieFaces) + 1) + "";
             }
 
             output.append("Rolling (").append(dieCount).append(") ").append(dieFaces).append("-sided dice\n");

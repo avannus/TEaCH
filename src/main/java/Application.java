@@ -13,8 +13,8 @@ public class Application {
 
         try {
             // Register your newly created AbilityBot
-            TEaCHer bot = new TEaCHer();
-            botsApi.registerBot(bot);
+            TEaCH TEaCHer = new TEaCH();
+            botsApi.registerBot(TEaCHer);
 
         } catch (TelegramApiException e) {
             e.printStackTrace();
