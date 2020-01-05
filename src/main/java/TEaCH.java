@@ -40,23 +40,36 @@ public class TEaCH extends AbilityBot implements Constants {
                 .privacy(Privacy.PUBLIC)
                 .action(ctx -> silent.send(
                         rollDice(ctx.update().getMessage().getText().replaceAll("\\s+", "").substring(5)),
-                        (long) ctx.chatId()))  //.action(ctx -> silent.send(rand.nextInt(20)+1+"", (long) ctx.user().getId()))
+                        ctx.chatId()))  //.action(ctx -> silent.send(rand.nextInt(20)+1+"", (long) ctx.user().getId()))
+                .build();
+    }
+
+    public Ability shipping() {
+        return Ability
+                .builder()
+                .name("shipping")
+                .info("i dont like shipping bot")
+                .locality(Locality.ALL)
+                .privacy(Privacy.PUBLIC)
+                .action(ctx -> silent.send("I don't ship it", ctx.chatId()))
                 .build();
     }
 
     public String rollDice(String userInput) { //takes input of XdY, where X is num of dice and Y is num of sides on each die
         userInput = userInput.toLowerCase();
-        String badInput = "bad input. Try again, see examples of good input below: \n/roll 2d6\n/roll 1d20";
+        String badInput = "bad input. Try again, see examples of good input below: \n/roll 2d6 [rolls (2) 6-sided dice]\n/roll 1d20 [rolls (1) 20-sided die]\n/roll d20 [rolls (1) 20-sided die]";
 
-        if (userInput.contains("d") &&
+        final boolean CONTAINS_ONE_D = userInput.contains("d") &&
+                userInput.replace("d", "").length() == userInput.length() - 1;
+
+        if (CONTAINS_ONE_D &&
                 userInput.indexOf("d") != 0 &&
                 userInput.indexOf("d") != userInput.length() &&
                 userInput.length() >= 3 &&
-                userInput.replace("d", "").length() == userInput.length() - 1 &&
-                userInput.replace("d", "").chars().allMatch(Character::isDigit)) {
+                userInput.replace("d", "").chars().allMatch(Character::isDigit)) { //check for 2d6 type format
             int dieCount = Integer.parseInt(userInput.substring(0, userInput.indexOf("d")));
             int dieFaces = Integer.parseInt(userInput.substring(userInput.indexOf("d") + 1));
-            if( dieFaces == 1) return "okay retard";
+            if (dieFaces == 1) return "please reconsider what you're doing right now";
             if (dieCount < 1 || dieFaces < 2) return badInput;
 
             Random rand = new Random();
@@ -69,12 +82,23 @@ public class TEaCH extends AbilityBot implements Constants {
             if (dieCount == 1) {
                 return (rand.nextInt(dieFaces) + 1) + "";
             }
+            int randomInput = 0;
+            int sum = 0;
 
             output.append("Rolling (").append(dieCount).append(") ").append(dieFaces).append("-sided dice\n");
             for (int i = 0; i < dieCount; i++) {
-                output.append("Roll ").append(i + 1).append(": ").append(rand.nextInt(dieFaces) + 1).append("\n");
+                randomInput = rand.nextInt(dieFaces) + 1;
+                output.append("Roll ").append(i + 1).append(": ").append(randomInput).append("\n");
+                sum += randomInput;
             }
+            output.append("Sum: ").append(sum);
             return output.toString();
+        } else if (CONTAINS_ONE_D &&
+                userInput.indexOf("d") == 0 &&
+                userInput.replace("d", "").chars().allMatch(Character::isDigit)) { //check for d6 type format
+            int dieFaces = Integer.parseInt(userInput.substring(1));
+            Random rand = new Random();
+            return rand.nextInt(dieFaces) + 1 + "";
         }
         return badInput;
     }
