@@ -6,6 +6,8 @@ import org.telegram.abilitybots.api.objects.Privacy;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Random;
+
 public class TEaCHer extends AbilityBot implements Constants {
 
     private final ResponseHandler responseHandler;
@@ -17,6 +19,61 @@ public class TEaCHer extends AbilityBot implements Constants {
 
     TEaCHer() {
         this(BOT_TOKEN, BOT_USERNAME);
+    }
+
+    public Ability d20() {
+        Random rand = new Random();
+        return Ability
+                .builder()
+                .name("d20")
+                .info("rolls a d20")
+                .locality(Locality.ALL)
+                .privacy(Privacy.PUBLIC)
+                .action(ctx -> silent.send(rand.nextInt(20) + 1 + "", (long) ctx.chatId()))
+                .build();
+    }
+
+    public Ability roll() {
+        return Ability
+                .builder()
+                .name("roll")
+                .info("/roll xdy, rolls qty(x) of y-sided dice")
+                .locality(Locality.ALL)
+                .privacy(Privacy.PUBLIC)
+                .action(ctx -> silent.send(
+                        rollDice(ctx.update().getMessage().getText().replaceAll("\\s+", "").substring(5)),
+                        (long) ctx.chatId()))  //.action(ctx -> silent.send(rand.nextInt(20)+1+"", (long) ctx.user().getId()))
+                .build();
+    }
+
+    public String rollDice(String userInput) { //takes input of XdY, where X is num of dice and Y is num of sides on each die
+        String badInput = "bad input. Try again, see examples of good input below: \n/roll 2d6\n/roll 1d20";
+        userInput = userInput.toLowerCase();
+        if (userInput.contains("d") &&
+                userInput.replace("d", "").length() == userInput.length() - 1 &&
+                userInput.replace("d", "").chars().allMatch(Character::isDigit) ) {
+            int dieCount = Integer.parseInt(userInput.substring(0, userInput.indexOf("d")));
+            int dieFaces = Integer.parseInt(userInput.substring(userInput.indexOf("d") + 1));
+            if(dieCount<1||dieFaces<2) return badInput;
+
+            Random rand = new Random();
+            StringBuilder output = new StringBuilder();
+
+            if(dieCount>10) {
+                dieCount = 10;
+                output.append("You are limited to 10 rolls at a time\n");
+            }
+            if(dieCount==1){
+                return (rand.nextInt(dieFaces) + 1)+"";
+            }
+
+            output.append("Rolling (").append(dieCount).append(") ").append(dieFaces).append("-sided dice\n");
+            for (int i = 0; i < dieCount; i++) {
+                output.append("Roll ").append(i + 1).append(": ").append(rand.nextInt(dieFaces) + 1).append("\n");
+            }
+            return output.toString();
+        }
+        return badInput;
     }
 
     /**
