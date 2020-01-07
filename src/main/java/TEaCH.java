@@ -136,7 +136,7 @@ public class TEaCH extends AbilityBot implements Constants {
                 .info("DMs you when you use this in a group chat")
                 .locality(Locality.ALL)
                 .privacy(Privacy.PUBLIC)
-                .action(ctx -> silent.send("Hi " + ctx.user().getFirstName() + ", I just wanted to pull you aside so the other people wouldn't hear me call you a retard", (long) ctx.user().getId()))
+                .action(ctx -> silent.send("Hi " + ctx.user().getFirstName() + ", I just wanted to pull you aside so the other people wouldn't hear me call you a " + System.getenv("mysteryVar"), (long) ctx.user().getId()))
                 .build();
     }
 
