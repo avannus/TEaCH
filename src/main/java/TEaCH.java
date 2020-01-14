@@ -1,6 +1,10 @@
+import java.util.Random;
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.*;
-import java.util.Random;
+import static org.telegram.abilitybots.api.objects.Flag.*;
+import static org.telegram.abilitybots.api.objects.Locality.*;
+import static org.telegram.abilitybots.api.objects.Privacy.*;
+
 //TODO fix /command@name_bot not working
 public class TEaCH extends AbilityBot implements Constants {
 
@@ -32,25 +36,13 @@ public class TEaCH extends AbilityBot implements Constants {
     }
     //</editor-fold>
 
-//    public Ability d20() { useless due to /roll
-//        Random rand = new Random();
-//        return Ability
-//                .builder()
-//                .name("d20")
-//                .info("rolls a d20")
-//                .locality(Locality.ALL)
-//                .privacy(Privacy.PUBLIC)
-//                .action(ctx -> silent.send(rand.nextInt(20) + 1 + "", (long) ctx.chatId()))
-//                .build();
-//    }
-
     public Ability allInfo() { //lets me find all info about a chat and my message
         return Ability
                 .builder()
                 .name("allinfo")
                 .info("gives all info about a certain chat")
-                .locality(Locality.ALL)
-                .privacy(Privacy.CREATOR)
+                .locality(ALL)
+                .privacy(CREATOR)
                 .action(ctx -> silent.send(
                         ctx.update().getMessage().toString(),
                         ctx.chatId()
@@ -64,12 +56,12 @@ public class TEaCH extends AbilityBot implements Constants {
                 .builder()
                 .name("roll")
                 .info("/roll xdy, rolls qty(x) of y-sided dice")
-                .locality(Locality.ALL)
-                .privacy(Privacy.PUBLIC)
-                .action(ctx -> silent.send(
-                        rollDice(ctx.update().getMessage().getText().replaceAll("\\s+", "").substring(5)), //TODO fix substring so it works when someone does /roll@wagie_bot instead of /roll
-                        ctx.chatId()
-                        )
+                .locality(ALL)
+                .privacy(PUBLIC)
+                .action(ctx -> {
+                            System.out.println(); //TODO replace this line with rollDice() method
+                            silent.send(rollDice(ctx), ctx.chatId());
+                        }
                 )
                 .build();
     }
@@ -79,29 +71,29 @@ public class TEaCH extends AbilityBot implements Constants {
                 .builder()
                 .name("shipping")
                 .info("i dont like shipping bot")
-                .locality(Locality.ALL)
-                .privacy(Privacy.PUBLIC)
+                .locality(ALL)
+                .privacy(PUBLIC)
                 .action(ctx -> silent.send("I don't ship it", ctx.chatId()))
                 .build();
     }
 
-    public Ability ratePhoto(){
+    public Ability ratePhoto() {
         return Ability
                 .builder()
                 .name(DEFAULT)
-                .flag(Flag.PHOTO)
-                .privacy(Privacy.PUBLIC)
-                .locality(Locality.ALL)
+                .flag(CAPTION)
+                .privacy(PUBLIC)
+                .locality(ALL)
                 .action(ctx -> silent.send(getRandPhotoRating(ctx), ctx.chatId()))
                 .build();
     }
 
-    public String getRandPhotoRating(MessageContext ctx){//TODO this isn't the right way to do it lmao
+    public String getRandPhotoRating(MessageContext ctx) {//TODO this isn't the right way to do it lmao
         Random rand = new Random();
-        if(ctx.update().getMessage().getCaption().toLowerCase().contains("rate")){
-            return ("I give it a "+rand.nextInt(11)+".");
-        }
-        return "";
+        //if (ctx.update().getMessage().getCaption().toLowerCase().contains("rate"))
+        return ("I give it a " + rand.nextInt(11) + ".");
+
+        //return "";
     }
 
     public Ability replyToStart() {
@@ -109,7 +101,7 @@ public class TEaCH extends AbilityBot implements Constants {
                 .builder()
                 .name("start")
                 .info(Constants.START_DESCRIPTION)
-                .locality(Locality.ALL)
+                .locality(ALL)
                 .privacy(Privacy.PUBLIC)
                 .action(ctx -> responseHandler.replyToStart(ctx.chatId()))
                 .build();
@@ -120,26 +112,28 @@ public class TEaCH extends AbilityBot implements Constants {
                 .builder()
                 .name("dm")
                 .info("DMs you when you use this in a group chat")
-                .locality(Locality.ALL)
+                .locality(ALL)
                 .privacy(Privacy.PUBLIC)
                 .action(ctx -> silent.send("Hi " + ctx.user().getFirstName() + ", I just wanted to pull you aside so the other people wouldn't hear me call you a " + System.getenv("mysteryVar"), (long) ctx.user().getId()))
                 .build();
     }
 
-    public String rollDice(String userInput) { //takes input of XdY, where X is num of dice and Y is num of sides on each die TODO get sum for rolls 100>x>10 TODO print 20 rolls to DM
-        userInput = userInput.toLowerCase();
-        String badInput = "bad input. Try again, see examples of good input below: \n/roll 2d6 [rolls (2) 6-sided dice]\n/roll 1d20 [rolls (1) 20-sided die]\n/roll d20 [rolls (1) 20-sided die]";
+    public String rollDice(MessageContext ctx) { //takes input of XdY, where X is num of dice and Y is num of sides on each die TODO get sum for rolls 100>x>10 TODO print 20 rolls to DM
+        String badInput = "Try again, see examples of good input below: \n/roll 2d6\t[rolls (2) 6-sided dice]\n/roll 1d20\t[rolls (1) 20-sided die]\n/roll d20\t[rolls (1) 20-sided die]";
+        if (ctx.arguments().length == 0) return badInput;
 
-        final boolean CONTAINS_ONE_D = userInput.contains("d") &&
-                userInput.replace("d", "").length() == userInput.length() - 1;
+        String userArg1 = ctx.firstArg().toLowerCase();
+
+        final boolean CONTAINS_ONE_D = userArg1.contains("d") &&
+                userArg1.replace("d", "").length() == userArg1.length() - 1;
 
         if (CONTAINS_ONE_D &&
-                userInput.indexOf("d") != 0 &&
-                userInput.indexOf("d") != userInput.length() &&
-                userInput.length() >= 3 &&
-                userInput.replace("d", "").chars().allMatch(Character::isDigit)) { //check for 2d6 type format
-            int dieCount = Integer.parseInt(userInput.substring(0, userInput.indexOf("d")));
-            int dieFaces = Integer.parseInt(userInput.substring(userInput.indexOf("d") + 1));
+                userArg1.indexOf("d") != 0 &&
+                userArg1.indexOf("d") != userArg1.length() &&
+                userArg1.length() >= 3 &&
+                userArg1.replace("d", "").chars().allMatch(Character::isDigit)) { //check for 2d6 type format
+            int dieCount = Integer.parseInt(userArg1.substring(0, userArg1.indexOf("d")));
+            int dieFaces = Integer.parseInt(userArg1.substring(userArg1.indexOf("d") + 1));
             if (dieFaces == 1) return "please reconsider what you're doing right now";
             if (dieCount < 1 || dieFaces < 2) return badInput;
 
@@ -165,9 +159,9 @@ public class TEaCH extends AbilityBot implements Constants {
             output.append("Sum: ").append(sum);
             return output.toString();
         } else if (CONTAINS_ONE_D &&
-                userInput.indexOf("d") == 0 &&
-                userInput.replace("d", "").chars().allMatch(Character::isDigit)) { //check for d6 type format
-            int dieFaces = Integer.parseInt(userInput.substring(1));
+                userArg1.indexOf("d") == 0 &&
+                userArg1.replace("d", "").chars().allMatch(Character::isDigit)) { //check for d6 type format
+            int dieFaces = Integer.parseInt(userArg1.substring(1));
             Random rand = new Random();
             return rand.nextInt(dieFaces) + 1 + "";
         }
