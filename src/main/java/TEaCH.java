@@ -1,15 +1,12 @@
 import org.telegram.abilitybots.api.bot.AbilityBot;
-import org.telegram.abilitybots.api.objects.Ability;
-import org.telegram.abilitybots.api.objects.Flag;
-import org.telegram.abilitybots.api.objects.Locality;
-import org.telegram.abilitybots.api.objects.Privacy;
-
+import org.telegram.abilitybots.api.objects.*;
 import java.util.Random;
-
+//TODO fix /command@name_bot not working
 public class TEaCH extends AbilityBot implements Constants {
 
     private final ResponseHandler responseHandler;
 
+    //<editor-fold desc="constructors and basic getters">
     TEaCH(String botToken, String botUsername) {
         super(botToken, botUsername);
         responseHandler = new ResponseHandler(sender, db);
@@ -19,15 +16,46 @@ public class TEaCH extends AbilityBot implements Constants {
         this(BOT_TOKEN, BOT_USERNAME);
     }
 
-    public Ability d20() {
-        Random rand = new Random();
+    @Override
+    public int creatorId() {
+        return CREATOR_ID;
+    }
+
+    @Override
+    public String getBotUsername() {
+        return BOT_USERNAME;
+    }
+
+    @Override
+    public String getBotToken() {
+        return BOT_TOKEN;
+    }
+    //</editor-fold>
+
+//    public Ability d20() { useless due to /roll
+//        Random rand = new Random();
+//        return Ability
+//                .builder()
+//                .name("d20")
+//                .info("rolls a d20")
+//                .locality(Locality.ALL)
+//                .privacy(Privacy.PUBLIC)
+//                .action(ctx -> silent.send(rand.nextInt(20) + 1 + "", (long) ctx.chatId()))
+//                .build();
+//    }
+
+    public Ability allInfo() { //lets me find all info about a chat and my message
         return Ability
                 .builder()
-                .name("d20")
-                .info("rolls a d20")
+                .name("allinfo")
+                .info("gives all info about a certain chat")
                 .locality(Locality.ALL)
-                .privacy(Privacy.PUBLIC)
-                .action(ctx -> silent.send(rand.nextInt(20) + 1 + "", (long) ctx.chatId()))
+                .privacy(Privacy.CREATOR)
+                .action(ctx -> silent.send(
+                        ctx.update().getMessage().toString(),
+                        ctx.chatId()
+                        )
+                )
                 .build();
     }
 
@@ -39,8 +67,10 @@ public class TEaCH extends AbilityBot implements Constants {
                 .locality(Locality.ALL)
                 .privacy(Privacy.PUBLIC)
                 .action(ctx -> silent.send(
-                        rollDice(ctx.update().getMessage().getText().replaceAll("\\s+", "").substring(5)),
-                        ctx.chatId()))  //.action(ctx -> silent.send(rand.nextInt(20)+1+"", (long) ctx.user().getId()))
+                        rollDice(ctx.update().getMessage().getText().replaceAll("\\s+", "").substring(5)), //TODO fix substring so it works when someone does /roll@wagie_bot instead of /roll
+                        ctx.chatId()
+                        )
+                )
                 .build();
     }
 
@@ -55,7 +85,48 @@ public class TEaCH extends AbilityBot implements Constants {
                 .build();
     }
 
-    public String rollDice(String userInput) { //takes input of XdY, where X is num of dice and Y is num of sides on each die
+    public Ability ratePhoto(){
+        return Ability
+                .builder()
+                .name(DEFAULT)
+                .flag(Flag.PHOTO)
+                .privacy(Privacy.PUBLIC)
+                .locality(Locality.ALL)
+                .action(ctx -> silent.send(getRandPhotoRating(ctx), ctx.chatId()))
+                .build();
+    }
+
+    public String getRandPhotoRating(MessageContext ctx){//TODO this isn't the right way to do it lmao
+        Random rand = new Random();
+        if(ctx.update().getMessage().getCaption().toLowerCase().contains("rate")){
+            return ("I give it a "+rand.nextInt(11)+".");
+        }
+        return "";
+    }
+
+    public Ability replyToStart() {
+        return Ability
+                .builder()
+                .name("start")
+                .info(Constants.START_DESCRIPTION)
+                .locality(Locality.ALL)
+                .privacy(Privacy.PUBLIC)
+                .action(ctx -> responseHandler.replyToStart(ctx.chatId()))
+                .build();
+    }
+
+    public Ability replyViaDM() {
+        return Ability
+                .builder()
+                .name("dm")
+                .info("DMs you when you use this in a group chat")
+                .locality(Locality.ALL)
+                .privacy(Privacy.PUBLIC)
+                .action(ctx -> silent.send("Hi " + ctx.user().getFirstName() + ", I just wanted to pull you aside so the other people wouldn't hear me call you a " + System.getenv("mysteryVar"), (long) ctx.user().getId()))
+                .build();
+    }
+
+    public String rollDice(String userInput) { //takes input of XdY, where X is num of dice and Y is num of sides on each die TODO get sum for rolls 100>x>10 TODO print 20 rolls to DM
         userInput = userInput.toLowerCase();
         String badInput = "bad input. Try again, see examples of good input below: \n/roll 2d6 [rolls (2) 6-sided dice]\n/roll 1d20 [rolls (1) 20-sided die]\n/roll d20 [rolls (1) 20-sided die]";
 
@@ -101,57 +172,5 @@ public class TEaCH extends AbilityBot implements Constants {
             return rand.nextInt(dieFaces) + 1 + "";
         }
         return badInput;
-    }
-
-    /**
-     * This ability has an extra "flag". It needs a photo to activate! This feature is activated by default if there is no /command given.
-     */
-    public Ability sayNiceToPhoto() {
-        return Ability
-                .builder()
-                .name(DEFAULT) // DEFAULT ability is executed if user did not specify a command -> Bot needs to have access to messages (check FatherBot)
-                .flag(Flag.PHOTO)
-                .privacy(Privacy.PUBLIC)
-                .locality(Locality.ALL)
-                .input(0)
-                .action(ctx -> silent.send("Daaaaang, what a nice photo!", ctx.chatId()))
-                .build();
-    }
-
-    public Ability replyToStart() {
-        return Ability
-                .builder()
-                .name("start")
-                .info(Constants.START_DESCRIPTION)
-                .locality(Locality.ALL)
-                .privacy(Privacy.PUBLIC)
-                .action(ctx -> responseHandler.replyToStart(ctx.chatId()))
-                .build();
-    }
-
-    public Ability replyViaDM() {
-        return Ability
-                .builder()
-                .name("dm")
-                .info("DMs you when you use this in a group chat")
-                .locality(Locality.ALL)
-                .privacy(Privacy.PUBLIC)
-                .action(ctx -> silent.send("Hi " + ctx.user().getFirstName() + ", I just wanted to pull you aside so the other people wouldn't hear me call you a " + System.getenv("mysteryVar"), (long) ctx.user().getId()))
-                .build();
-    }
-
-    @Override
-    public int creatorId() {
-        return CREATOR_ID;
-    }
-
-    @Override
-    public String getBotUsername() {
-        return BOT_USERNAME;
-    }
-
-    @Override
-    public String getBotToken() {
-        return BOT_TOKEN;
     }
 }

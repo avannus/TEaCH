@@ -1,0 +1,5 @@
+2020.01.13
+-Added changelog
+-Removed /d20 as it's redundant to /roll
+-Added /allInfo for me to get all info from chats
+-Added ratephoto (BAD implementation, throws exceptions at every image, need to fix)
