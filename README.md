@@ -3,6 +3,10 @@ Telegram Exercise and Chat Helper
 
 This is a bot to help remind you to exercise, among other things
 
+## Functionality:
+- /roll: "/roll 2d6" rolls (2) 6-sided dice. Also accepts "/roll d20" as input
+- Photo ratings: rates any photo in which you include the word "rate" in the caption
+
 ## CHANGELOG
 
 2020.01.13.03
