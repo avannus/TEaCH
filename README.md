@@ -1,7 +1,7 @@
-# TEaCHer
+# TEaCH
 Telegram Exercise and Chat Helper
 
-This is a bot to help remind you to exercise, among other things
+Use this bot, the TEaCHer, to help automate Telegram chats.
 
 ## Functionality:
 - /roll: "/roll 2d6" rolls (2) 6-sided dice. Also accepts "/roll d20" as input
