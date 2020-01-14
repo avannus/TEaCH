@@ -1,6 +1,9 @@
 import java.util.Random;
+
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.*;
+import org.telegram.telegrambots.meta.api.objects.Update;
+
 import static org.telegram.abilitybots.api.objects.Flag.*;
 import static org.telegram.abilitybots.api.objects.Locality.*;
 import static org.telegram.abilitybots.api.objects.Privacy.*;
@@ -34,6 +37,11 @@ public class TEaCH extends AbilityBot implements Constants {
     public String getBotToken() {
         return BOT_TOKEN;
     }
+
+    @Override
+    public boolean checkGlobalFlags(Update update) {
+        return true;
+    }
     //</editor-fold>
 
     public Ability allInfo() { //lets me find all info about a chat and my message
@@ -58,11 +66,7 @@ public class TEaCH extends AbilityBot implements Constants {
                 .info("/roll xdy, rolls qty(x) of y-sided dice")
                 .locality(ALL)
                 .privacy(PUBLIC)
-                .action(ctx -> {
-                            System.out.println(); //TODO replace this line with rollDice() method
-                            silent.send(rollDice(ctx), ctx.chatId());
-                        }
-                )
+                .action(ctx -> silent.send(rollDice(ctx), ctx.chatId()))
                 .build();
     }
 
@@ -80,20 +84,15 @@ public class TEaCH extends AbilityBot implements Constants {
     public Ability ratePhoto() {
         return Ability
                 .builder()
-                .name(DEFAULT)
+                .name("DEFAULT")
+                .info("Rates every captions photo")
                 .flag(CAPTION)
                 .privacy(PUBLIC)
                 .locality(ALL)
-                .action(ctx -> silent.send(getRandPhotoRating(ctx), ctx.chatId()))
+                .action(ctx -> {
+                    silent.send("photo rating: " + (new Random().nextInt(10) + 1), ctx.chatId());
+                })
                 .build();
-    }
-
-    public String getRandPhotoRating(MessageContext ctx) {//TODO this isn't the right way to do it lmao
-        Random rand = new Random();
-        //if (ctx.update().getMessage().getCaption().toLowerCase().contains("rate"))
-        return ("I give it a " + rand.nextInt(11) + ".");
-
-        //return "";
     }
 
     public Ability replyToStart() {
@@ -134,8 +133,12 @@ public class TEaCH extends AbilityBot implements Constants {
                 userArg1.replace("d", "").chars().allMatch(Character::isDigit)) { //check for 2d6 type format
             int dieCount = Integer.parseInt(userArg1.substring(0, userArg1.indexOf("d")));
             int dieFaces = Integer.parseInt(userArg1.substring(userArg1.indexOf("d") + 1));
-            if (dieFaces == 1) return "please reconsider what you're doing right now";
-            if (dieCount < 1 || dieFaces < 2) return badInput;
+            if (dieFaces == 1) {
+                return "please reconsider what you're doing right now";
+            }
+            if (dieCount < 1 || dieFaces < 1) {
+                return badInput;
+            }
 
             Random rand = new Random();
             StringBuilder output = new StringBuilder();
@@ -147,7 +150,7 @@ public class TEaCH extends AbilityBot implements Constants {
             if (dieCount == 1) {
                 return (rand.nextInt(dieFaces) + 1) + "";
             }
-            int randomInput = 0;
+            int randomInput;
             int sum = 0;
 
             output.append("Rolling (").append(dieCount).append(") ").append(dieFaces).append("-sided dice\n");
@@ -162,6 +165,12 @@ public class TEaCH extends AbilityBot implements Constants {
                 userArg1.indexOf("d") == 0 &&
                 userArg1.replace("d", "").chars().allMatch(Character::isDigit)) { //check for d6 type format
             int dieFaces = Integer.parseInt(userArg1.substring(1));
+            if (dieFaces == 1) {
+                return "please reconsider what you're doing right now";
+            }
+            if (dieFaces < 1) {
+                return badInput;
+            }
             Random rand = new Random();
             return rand.nextInt(dieFaces) + 1 + "";
         }
