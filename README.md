@@ -9,6 +9,11 @@ Use this bot, the TEaCHer, to help automate Telegram chats.
 
 ## CHANGELOG
 
+2020.01.15.00
+- birthday update :^)
+- moved photo rating functionality to student, rigged ratings a little
+- added TEaCHer file to .gitignore, you now need to recompile everything in /src/java afaik to compile on a fresh pull
+
 2020.01.14.00
 - moved /roll funcitonality to Student
 - re-renamed the TEaCH class back to TEaCHer

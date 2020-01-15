@@ -84,13 +84,21 @@ public class TEaCHer extends AbilityBot implements Constants {
     public Ability ratePhoto() {
         return Ability
                 .builder()
-                .name("DEFAULT")
+                .name(DEFAULT)
                 .info("Rates every captions photo")
                 .flag(CAPTION)
                 .privacy(PUBLIC)
                 .locality(ALL)
                 .action(ctx -> {
-                    silent.send("photo rating: " + (new Random().nextInt(10) + 1), ctx.chatId());
+                    if(ctx.update().getMessage().getCaption().toLowerCase().contains("rate")) {
+                        System.out.println("contains rate");
+                        silent.send(
+                                "I give it a " + Student.getPhotoRating(ctx)
+                                , ctx.chatId()
+                        );
+                    } else {
+                        System.out.println("doesn't contain rate");
+                    }
                 })
                 .build();
     }

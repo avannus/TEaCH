@@ -1,8 +1,9 @@
 import org.jetbrains.annotations.NotNull;
 import org.telegram.abilitybots.api.objects.MessageContext;
+
 import java.util.Random;
 
-public class Student { //methods for TEaCHer that aren't primary functions
+public class Student implements Constants { //methods for TEaCHer that aren't primary functions
 
     static String rollDice(@NotNull MessageContext ctx) { //takes input of XdY, where X is num of dice and Y is num of sides on each die TODO get sum for rolls 100>x>10 TODO print 20 rolls to DM
         String badInput = "Try again, see examples of good input below: \n/roll 2d6\t[rolls (2) 6-sided dice]\n/roll 1d20\t[rolls (1) 20-sided die]\n/roll d20\t[rolls (1) 20-sided die]";
@@ -62,5 +63,21 @@ public class Student { //methods for TEaCHer that aren't primary functions
             return rand.nextInt(dieFaces) + 1 + "";
         }
         return badInput;
+    }
+
+    static int getPhotoRating(@NotNull MessageContext ctx) {
+        Random rand = new Random();
+        int rating = rand.nextInt(10) + 1;
+        if (ctx.user().getId() == CREATOR_ID) { //give me better ratings :^). If anyone sees this, @me
+            for (int i = 0; i < 2; i++) {
+                if (rating >= 7) {
+                    return rating;
+                } else {
+                    rating = rand.nextInt(10) + 1 + i;
+                }
+            }
+            return rating;
+        }
+        return rating;
     }
 }
