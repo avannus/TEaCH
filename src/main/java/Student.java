@@ -44,10 +44,10 @@ public class Student implements Constants { //methods for TEaCHer that aren't pr
             output.append("Rolling (").append(dieCount).append(") ").append(dieFaces).append("-sided dice\n");
             for (int i = 0; i < dieCount; i++) {
                 randomInput = rand.nextInt(dieFaces) + 1;
-                output.append("Roll ").append(i + 1).append(": ").append(randomInput).append("\n");
+                output.append("Die ").append(i + 1).append(": ").append(randomInput).append("\n");
                 sum += randomInput;
             }
-            output.append("Sum: ").append(sum);
+            output.append("Sum: ").append(sum).append(" (Max: ").append(dieCount * dieFaces).append(")");
             return output.toString();
         } else if (CONTAINS_ONE_D &&
                 userArg1.indexOf("d") == 0 &&

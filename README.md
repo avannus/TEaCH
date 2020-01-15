@@ -15,7 +15,7 @@ Use this bot, the TEaCHer, to help automate Telegram chats.
 - added TEaCHer file to .gitignore, you now need to recompile everything in /src/java afaik to compile on a fresh pull
 
 2020.01.14.00
-- moved /roll funcitonality to Student
+- moved /roll functionality to Student
 - re-renamed the TEaCH class back to TEaCHer
 
 this is an exercise in learning how to resolve merge conflicts 

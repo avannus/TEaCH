@@ -91,13 +91,12 @@ public class TEaCHer extends AbilityBot implements Constants {
                 .locality(ALL)
                 .action(ctx -> {
                     if(ctx.update().getMessage().getCaption().toLowerCase().contains("rate")) {
-                        System.out.println("contains rate");
                         silent.send(
                                 "I give it a " + Student.getPhotoRating(ctx)
                                 , ctx.chatId()
                         );
                     } else {
-                        System.out.println("doesn't contain rate");
+
                     }
                 })
                 .build();
