@@ -9,6 +9,10 @@ Use this bot, the TEaCHer, to help automate Telegram chats.
 
 ## CHANGELOG
 
+2020.01.21
+- fixed /commmand@bot not working
+- added explicit limits to the /roll for both private chat and public groups
+
 2020.01.15.00
 - birthday update :^)
 - moved photo rating functionality to student, rigged ratings a little
