@@ -9,6 +9,9 @@ Use this bot, the TEaCHer, to help automate Telegram chats.
 
 ## CHANGELOG
 
+2020.01.28
+- scheduled messages don't work yet
+
 2020.01.21
 - fixed /commmand@bot not working
 - added explicit limits to the /roll for both private chat and public groups

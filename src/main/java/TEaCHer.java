@@ -1,8 +1,8 @@
-import java.util.Random;
-
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
+import java.util.function.Consumer;
 
 import static org.telegram.abilitybots.api.objects.Flag.*;
 import static org.telegram.abilitybots.api.objects.Locality.*;
@@ -109,7 +109,18 @@ public class TEaCHer extends AbilityBot implements Constants {
                 .info(Constants.START_DESCRIPTION)
                 .locality(ALL)
                 .privacy(Privacy.PUBLIC)
-                .action(ctx -> responseHandler.replyToStart(ctx.chatId()))
+                .action(ctx -> silent.send(START_REPLY,ctx.chatId()))
+                .build();
+    }
+
+    public Ability startExerciseReminders(){
+        return Ability
+                .builder()
+                .name("startex")
+                .info(Constants.STARTEXERCISE_DESCRIPTION)
+                .locality(ALL)
+                .privacy(Privacy.PUBLIC)
+                .action(ctx -> responseHandler.replyToExerciseStart(ctx.chatId()))
                 .build();
     }
 
@@ -122,5 +133,17 @@ public class TEaCHer extends AbilityBot implements Constants {
                 .privacy(Privacy.PUBLIC)
                 .action(ctx -> silent.send("Hi " + ctx.user().getFirstName() + ", I just wanted to pull you aside so the other people wouldn't hear me call you a " + System.getenv("mysteryVar"), (long) ctx.user().getId()))
                 .build();
+    }
+
+    public Reply sayYuckOnImage() {
+        // getChatId is a public utility function in rg.telegram.abilitybots.api.util.AbilityUtils
+        Consumer<Update> action = upd -> silent.send("Yuck", upd.getMessage().getChatId());
+        return Reply.of(action, Flag.PHOTO);
+    }
+
+    public Reply replyToButtons() {
+        Consumer<Update> action = upd -> responseHandler.replyToButtons(upd.getMessage().getChatId(), upd.getCallbackQuery().getData());
+//        Consumer<Update> action = upd -> responseHandler.replyToTrainingToday(upd.getMessage().getChatId());
+        return Reply.of(action, Flag.CALLBACK_QUERY);
     }
 }

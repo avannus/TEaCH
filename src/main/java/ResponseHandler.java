@@ -14,21 +14,51 @@ public class ResponseHandler {
         chatStates = db.getMap(Constants.CHAT_STATES);
     }
 
-    public void replyToStart(long chatId) {
+    public void replyToExerciseStart(long chatId) {
         try {
             sender.execute(new SendMessage()
-                    .setText(Constants.START_REPLY)
+                    .setText(Constants.STARTEXERCISE_REPLY)
                     .setChatId(chatId));
-
             sender.execute(new SendMessage()
                     .setText(Constants.FIND_TRAINING_DATE)
                     .setChatId(chatId)
                     .setReplyMarkup(KeyboardFactory.withTodayTomorrowButtons()));
-
             chatStates.put(chatId, State.AWAITING_TRAINING_DAY);
         } catch (TelegramApiException e) {
             e.printStackTrace();
+        }
+    }
 
+    public void replyToButtons(long chatId, String buttonId) {
+        try {
+            switch (buttonId) {
+                case Constants.TRAINING_TODAY:
+                    replyToTrainingToday(chatId);
+                    break;
+                case Constants.TRAINING_TOMORROW:
+                    replyToTrainingTomorrow(chatId);
+                    break;
+            }
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void replyToTrainingToday(long chatId) throws TelegramApiException {
+        if (chatStates.get(chatId).equals(State.AWAITING_TRAINING_DAY)) {
+            sender.execute(new SendMessage()
+                    .setText(Constants.TRAINING_TODAY_REPLY)
+                    .setChatId(chatId));
+            chatStates.put(chatId, State.TODAY_IS_TRAINING_DAY);
+        }
+    }
+
+    private void replyToTrainingTomorrow(long chatId) throws TelegramApiException {
+        if (chatStates.get(chatId).equals(State.AWAITING_TRAINING_DAY)) {
+            sender.execute(new SendMessage()
+                    .setText(Constants.TRAINING_TOMORROW_REPLY)
+                    .setChatId(chatId));
+            chatStates.put(chatId, State.TODAY_IS_RELAX_DAY);
         }
     }
 }
